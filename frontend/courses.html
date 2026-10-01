@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courses - LearnHub</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+    <h1>LearnHub</h1>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="courses.html">Courses</a>
+    </nav>
+</header>
+
+<section class="courses">
+    <h2>Available Courses</h2>
+
+    <div id="courseList">
+        Loading courses...
+    </div>
+</section>
+
+<section class="add-course">
+
+    <h2>Add a Course</h2>
+
+    <input id="courseTitle" placeholder="Course Title">
+    <input id="instructor" placeholder="Instructor">
+    <input id="description" placeholder="Description">
+
+    <button onclick="addCourse()">Add Course</button>
+
+</section>
+
+<script src="script.js"></script>
+
+</body>
+</html>
