@@ -1,0 +1,16 @@
+services:
+
+  user-service:
+    image: learnhub-user-service
+    ports:
+      - "8081:8081"
+
+  course-service:
+    image: learnhub-course-service
+    ports:
+      - "8082:8082"
+
+  enrollment-service:
+    image: learnhub-enrollment-service
+    ports:
+      - "8083:8083"
