@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/courses")
-@CrossOrigin
+@CrossOrigin(origins = "https://learnhub-frontend-0a0t.onrender.com")
 public class CourseController {
 
     private final List<Course> courses = new ArrayList<>();

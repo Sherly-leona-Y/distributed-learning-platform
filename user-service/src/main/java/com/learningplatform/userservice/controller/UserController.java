@@ -18,7 +18,7 @@ import com.learningplatform.userservice.service.UserService;
 
 @RestController
 @RequestMapping("/users")
-@CrossOrigin
+@CrossOrigin(origins = "https://learnhub-frontend-0a0t.onrender.com")
 public class UserController {
 
     private final UserService service;

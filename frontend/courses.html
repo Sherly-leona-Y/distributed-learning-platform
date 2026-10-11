@@ -545,7 +545,7 @@
 
         try {
             const response = await fetch(
-                "http://localhost:8083/enrollments",
+                "https://learnhub-enrollment-service.onrender.com/enrollments",
                 {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -580,7 +580,7 @@
         message.textContent = "Adding course...";
 
         try {
-            const response = await fetch("http://localhost:8082/courses", {
+            const response = await fetch("https://learnhub-course-service.onrender.com/courses", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -613,7 +613,7 @@
         const list = document.getElementById("courseList");
 
         try {
-            const response = await fetch("http://localhost:8082/courses");
+            const response = await fetch("https://learnhub-course-service.onrender.com/courses");
 
             if (!response.ok) {
                 throw new Error("Course Service returned " + response.status);

@@ -1,6 +1,6 @@
-const USER_SERVICE = "http://localhost:8081";
-const COURSE_SERVICE = "http://localhost:8082";
-const ENROLLMENT_SERVICE = "http://localhost:8083";
+const USER_SERVICE = "https://learnhub-user-service.onrender.com";
+const COURSE_SERVICE = "https://learnhub-course-service.onrender.com";
+const ENROLLMENT_SERVICE = "https://learnhub-enrollment-service.onrender.com";
 
 
 function showRegister() {
