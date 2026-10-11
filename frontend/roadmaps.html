@@ -1,0 +1,523 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Roadmaps - LearnHub</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        body {
+            background: #f5f7fb;
+        }
+
+        .roadmap-hero {
+            padding: 65px 10%;
+            background: white;
+            border-bottom: 1px solid #e8eaf2;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            color: #4f46e5;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .roadmap-hero h2 {
+            font-size: clamp(32px, 5vw, 48px);
+            line-height: 1.15;
+            max-width: 650px;
+            margin-bottom: 18px;
+            color: #20213a;
+        }
+
+        .roadmap-hero p {
+            max-width: 570px;
+            color: #65677a;
+            font-size: 17px;
+            line-height: 1.7;
+        }
+
+        .roadmap-section {
+            padding: 45px 10%;
+        }
+
+        .section-heading {
+            margin-bottom: 25px;
+        }
+
+        .section-heading h2 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .section-heading p {
+            color: #77798b;
+        }
+
+        #roadmap-status {
+            color: #65677a;
+            margin-bottom: 20px;
+        }
+
+        .roadmap-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 22px;
+        }
+
+        .roadmap-card {
+            background: white;
+            border: 1px solid #e5e7f0;
+            border-radius: 14px;
+            padding: 26px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            box-shadow: 0 4px 14px rgba(30, 35, 80, 0.04);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .roadmap-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 24px rgba(30, 35, 80, 0.09);
+        }
+
+        .roadmap-icon {
+            width: 48px;
+            height: 48px;
+            display: grid;
+            place-items: center;
+            background: #eeedff;
+            border-radius: 12px;
+            font-size: 25px;
+            margin-bottom: 20px;
+        }
+
+        .roadmap-card h3 {
+            font-size: 21px;
+            margin-bottom: 10px;
+            color: #24243a;
+        }
+
+        .roadmap-card .description {
+            color: #6b6d80;
+            line-height: 1.65;
+            margin-bottom: 20px;
+        }
+
+        .roadmap-meta {
+            font-size: 13px;
+            font-weight: bold;
+            color: #4f46e5;
+            background: #eeedff;
+            padding: 6px 11px;
+            border-radius: 20px;
+            margin-top: auto;
+            margin-bottom: 18px;
+        }
+
+        .roadmap-card button {
+            margin-top: 0;
+        }
+
+        #roadmap-details {
+            margin-top: 38px;
+            background: white;
+            border: 1px solid #e5e7f0;
+            border-radius: 14px;
+            padding: 30px;
+            scroll-margin-top: 25px;
+        }
+
+        #roadmap-details[hidden] {
+            display: none;
+        }
+
+        .details-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .details-top h2 {
+            font-size: 25px;
+            margin-bottom: 5px;
+        }
+
+        .details-description {
+            color: #737589;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 9px;
+            background: #e9eaf2;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background: #4f46e5;
+            border-radius: 20px;
+            transition: width 0.25s;
+        }
+
+        .milestone {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+            padding: 19px;
+            margin: 13px 0;
+            border: 1px solid #e6e7ef;
+            border-radius: 11px;
+            background: #fff;
+            transition: background 0.2s;
+        }
+
+        .milestone.completed {
+            background: #f0f8f3;
+            border-color: #c8e5d1;
+        }
+
+        .milestone input {
+            width: 18px;
+            height: 18px;
+            margin-top: 4px;
+            accent-color: #35815a;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .milestone-content {
+            flex: 1;
+        }
+
+        .milestone-content h3 {
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+
+        .milestone-content p {
+            font-size: 14px;
+            color: #6b6d80;
+            line-height: 1.6;
+        }
+
+        .project-label {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 0.7px;
+            color: #4f46e5;
+            margin-bottom: 5px;
+        }
+
+        .empty-state {
+            background: white;
+            border: 1px solid #e5e7f0;
+            padding: 25px;
+            border-radius: 12px;
+            color: #77798b;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #77798b;
+            font-size: 13px;
+        }
+
+        @media (max-width: 650px) {
+            .roadmap-hero {
+                padding: 42px 7%;
+            }
+
+            .roadmap-section {
+                padding: 35px 7%;
+            }
+
+            .roadmap-grid {
+                grid-template-columns: 1fr;
+            }
+
+            #roadmap-details {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>LearnHub</h1>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="courses.html">Courses</a>
+        <a href="roadmaps.html">Roadmaps</a>
+    </nav>
+</header>
+
+<section class="roadmap-hero">
+    <span class="eyebrow">YOUR LEARNING JOURNEY</span>
+    <h2>Learn a skill.<br>Build something real.</h2>
+    <p>
+        Stop wondering what to learn next. Follow a structured skill
+        roadmap, complete practical milestones, and turn your knowledge
+        into projects you can showcase.
+    </p>
+</section>
+
+<main class="roadmap-section">
+
+    <div class="section-heading">
+        <h2>Choose your path</h2>
+        <p>Four starting points. Practical projects. Progress at your pace.</p>
+    </div>
+
+    <p id="roadmap-status" role="status" aria-live="polite">
+        Loading learning roadmaps...
+    </p>
+
+    <section id="roadmaps-grid" class="roadmap-grid"></section>
+
+    <section id="roadmap-details" hidden aria-live="polite">
+        <div class="details-top">
+            <div>
+                <span class="eyebrow">YOUR PERSONAL LEARNING PATH</span>
+                <h2 id="details-title"></h2>
+            </div>
+            <button type="button" id="close-roadmap" class="secondary-button">
+                Close
+            </button>
+        </div>
+
+        <p id="details-description" class="details-description"></p>
+
+        <div class="progress-label">
+            <span>Your progress</span>
+            <strong id="progress-text">0 of 0 completed</strong>
+        </div>
+
+        <div
+            class="progress-track"
+            role="progressbar"
+            aria-label="Roadmap completion"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+            id="progress-track"
+        >
+            <div id="progress-bar"></div>
+        </div>
+
+        <div id="milestones-list"></div>
+    </section>
+
+</main>
+
+<footer>
+    LearnHub · Learn at your pace. Build your future.
+</footer>
+
+<script>
+    const API_URL = "http://localhost:8082/roadmaps";
+
+    const grid = document.getElementById("roadmaps-grid");
+    const statusMessage = document.getElementById("roadmap-status");
+    const details = document.getElementById("roadmap-details");
+    const milestonesList = document.getElementById("milestones-list");
+
+    const icons = {
+        "python": "🐍",
+        "web-development": "🌐",
+        "cybersecurity": "🛡️",
+        "game-development": "🎮"
+    };
+
+    async function loadRoadmaps() {
+        try {
+            const response = await fetch(API_URL);
+
+            if (!response.ok) {
+                throw new Error("Roadmap service returned " + response.status);
+            }
+
+            const roadmaps = await response.json();
+            grid.replaceChildren();
+
+            roadmaps.forEach(roadmap => {
+                const card = document.createElement("article");
+                card.className = "roadmap-card";
+
+                const icon = document.createElement("div");
+                icon.className = "roadmap-icon";
+                icon.setAttribute("aria-hidden", "true");
+                icon.textContent = icons[roadmap.id] || "📚";
+
+                const title = document.createElement("h3");
+                title.textContent = roadmap.title;
+
+                const description = document.createElement("p");
+                description.className = "description";
+                description.textContent = roadmap.description;
+
+                const duration = document.createElement("span");
+                duration.className = "roadmap-meta";
+                duration.textContent = "◷  " + roadmap.duration;
+
+                const button = document.createElement("button");
+                button.type = "button";
+                button.textContent = "Explore roadmap →";
+                button.addEventListener("click", () => showRoadmap(roadmap));
+
+                card.append(icon, title, description, duration, button);
+                grid.appendChild(card);
+            });
+
+            statusMessage.textContent =
+                roadmaps.length + " learning paths available.";
+
+        } catch (error) {
+            console.error("Failed to load roadmaps:", error);
+
+            statusMessage.textContent =
+                "Couldn't load roadmaps. Check that Course Service is running on port 8082.";
+
+            const retry = document.createElement("button");
+            retry.type = "button";
+            retry.textContent = "Try again";
+            retry.addEventListener("click", loadRoadmaps);
+            statusMessage.append(" ", retry);
+        }
+    }
+
+    function showRoadmap(roadmap) {
+        details.hidden = false;
+
+        document.getElementById("details-title").textContent = roadmap.title;
+        document.getElementById("details-description").textContent =
+            roadmap.description + " Estimated duration: " + roadmap.duration + ".";
+
+        milestonesList.replaceChildren();
+
+        const milestones = roadmap.milestones || [];
+        const storageKey = "learnhub-progress-" + roadmap.id;
+
+        let completed = [];
+
+        try {
+            const saved = JSON.parse(localStorage.getItem(storageKey) || "[]");
+
+            if (Array.isArray(saved)) {
+                completed = saved.filter(
+                    index => Number.isInteger(index) &&
+                    index >= 0 &&
+                    index < milestones.length
+                );
+            }
+        } catch (error) {
+            completed = [];
+        }
+
+        function updateProgress() {
+            const count = completed.length;
+            const percent = milestones.length
+                ? Math.round((count / milestones.length) * 100)
+                : 0;
+
+            document.getElementById("progress-text").textContent =
+                `${count} of ${milestones.length} milestones completed (${percent}%)`;
+
+            document.getElementById("progress-bar").style.width = percent + "%";
+
+            document.getElementById("progress-track")
+                .setAttribute("aria-valuenow", percent);
+
+            try {
+                localStorage.setItem(storageKey, JSON.stringify(completed));
+            } catch (error) {
+                console.warn("Progress could not be saved in this browser.");
+            }
+        }
+
+        milestones.forEach((milestone, index) => {
+            const item = document.createElement("article");
+            item.className = "milestone";
+
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.id = `milestone-${roadmap.id}-${index}`;
+            checkbox.checked = completed.includes(index);
+
+            const content = document.createElement("div");
+            content.className = "milestone-content";
+
+            const label = document.createElement("label");
+            label.htmlFor = checkbox.id;
+            label.className = "project-label";
+            label.textContent = `MILESTONE ${String(index + 1).padStart(2, "0")}`;
+
+            const title = document.createElement("h3");
+            title.textContent = milestone.title;
+
+            const projectLabel = document.createElement("p");
+            projectLabel.textContent = "Build this project: " + milestone.project;
+
+            content.append(label, title, projectLabel);
+            item.append(checkbox, content);
+
+            if (checkbox.checked) {
+                item.classList.add("completed");
+            }
+
+            checkbox.addEventListener("change", () => {
+                if (checkbox.checked) {
+                    if (!completed.includes(index)) {
+                        completed.push(index);
+                    }
+                } else {
+                    completed = completed.filter(value => value !== index);
+                }
+
+                item.classList.toggle("completed", checkbox.checked);
+                updateProgress();
+            });
+
+            milestonesList.appendChild(item);
+        });
+
+        updateProgress();
+        details.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    document.getElementById("close-roadmap").addEventListener("click", () => {
+        details.hidden = true;
+    });
+
+    loadRoadmaps();
+</script>
+
+</body>
+</html>

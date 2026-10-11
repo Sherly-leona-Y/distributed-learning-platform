@@ -37,33 +37,70 @@ async function registerUser() {
 }
 
 
+
 async function loadCourses() {
-
-    const response = await fetch(
-        COURSE_SERVICE + "/courses"
-    );
-
-    const courses = await response.json();
-
     const list = document.getElementById("courseList");
 
-    list.innerHTML = "";
+    if (!list) return;
 
-    courses.forEach(course => {
+    list.innerHTML = "<p>Loading courses...</p>";
 
-        list.innerHTML += `
+    try {
+        const response = await fetch(COURSE_SERVICE + "/courses");
+
+        if (!response.ok) {
+            throw new Error("Server returned " + response.status);
+        }
+
+        const courses = await response.json();
+        list.innerHTML = "";
+
+        if (!Array.isArray(courses) || courses.length === 0) {
+            list.innerHTML = `
+                <div class="course-card">
+                    <h3>No courses yet</h3>
+                    <p>Add a course using the form below to get started.</p>
+                </div>
+            `;
+            return;
+        }
+
+        courses.forEach(course => {
+            const card = document.createElement("article");
+            card.className = "course-card";
+
+            const title = document.createElement("h3");
+            title.textContent = course.title || "Untitled course";
+
+            const instructor = document.createElement("p");
+            instructor.textContent =
+                "Instructor: " + (course.instructor || "Not specified");
+
+            const description = document.createElement("p");
+            description.textContent =
+                course.description || "No description provided.";
+
+            const button = document.createElement("button");
+            button.textContent = "Enroll";
+            button.addEventListener("click", () => enroll(course.id));
+
+            card.append(title, instructor, description, button);
+            list.appendChild(card);
+        });
+
+    } catch (error) {
+        console.error("Unable to load courses:", error);
+
+        list.innerHTML = `
             <div class="course-card">
-                <h3>${course.title}</h3>
-                <p><strong>Instructor:</strong> ${course.instructor}</p>
-                <p>${course.description}</p>
-
-                <button onclick="enroll(${course.id})">
-                    Enroll
-                </button>
+                <h3>Courses couldn't load</h3>
+                <p>Check that Course Service is running on port 8082.</p>
+                <button onclick="loadCourses()">Try again</button>
             </div>
         `;
-    });
+    }
 }
+
 
 
 async function addCourse() {

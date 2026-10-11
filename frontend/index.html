@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,46 +7,100 @@
     <title>LearnHub</title>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
 <header>
     <h1>LearnHub</h1>
-
     <nav>
         <a href="index.html">Home</a>
         <a href="courses.html">Courses</a>
+        <a href="roadmaps.html">Roadmaps</a>
         <button onclick="showRegister()">Register</button>
+        <button onclick="showLogin()">Login</button>
     </nav>
 </header>
 
 <section class="hero">
     <div>
         <h2>Learn. Enroll. Grow.</h2>
-        <p>
-            A distributed learning platform where students
-            can discover courses and enroll easily.
-        </p>
-
-        <button onclick="location.href='courses.html'">
-            Explore Courses
-        </button>
+        <p>A distributed learning platform where students can discover courses and enroll easily.</p>
+        <button onclick="location.href='courses.html'">Explore Courses</button>
     </div>
 </section>
 
 <section id="registerSection" class="register">
     <h2>Student Registration</h2>
-
-    <input id="name" type="text" placeholder="Your Name">
-    <input id="email" type="email" placeholder="Email">
-    <input id="password" type="password" placeholder="Password">
-
+    <input id="name" type="text" placeholder="Your Name" required>
+    <input id="email" type="email" placeholder="Email" required>
+    <input id="password" type="password" placeholder="Password" required>
     <button onclick="registerUser()">Register</button>
-
     <p id="registerMessage"></p>
 </section>
 
+<section id="loginSection" class="register">
+    <h2>Student Login</h2>
+    <input id="loginEmail" type="email" placeholder="Email" required>
+    <input id="loginPassword" type="password" placeholder="Password" required>
+    <button onclick="loginUser()">Login</button>
+    <p id="loginMessage"></p>
+</section>
+
 <script src="script.js"></script>
+<script>
+    function showRegister() {
+        document.getElementById("registerSection").scrollIntoView({
+            behavior: "smooth"
+        });
+    }
+
+    function showLogin() {
+        document.getElementById("loginSection").scrollIntoView({
+            behavior: "smooth"
+        });
+    }
+
+    async function loginUser() {
+        const email = document.getElementById("loginEmail").value.trim();
+        const password = document.getElementById("loginPassword").value;
+        const message = document.getElementById("loginMessage");
+
+        if (!email || !password) {
+            message.textContent = "Please enter your email and password.";
+            return;
+        }
+
+        message.textContent = "Logging in...";
+
+        try {
+            const response = await fetch("http://localhost:8081/users/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || "Invalid email or password.");
+            }
+
+            localStorage.setItem("learnhub-user-id", data.id);
+            localStorage.setItem("learnhub-user-name", data.name);
+            localStorage.setItem("learnhub-user-email", data.email);
+
+            message.textContent = "Login successful! Opening dashboard...";
+
+            setTimeout(() => {
+                window.location.href = "dashboard.html";
+            }, 700);
+
+        } catch (error) {
+            message.textContent = error.message.includes("fetch")
+                ? "Cannot connect to User Service. Is it running on port 8081?"
+                : error.message;
+        }
+    }
+</script>
 
 </body>
 </html>

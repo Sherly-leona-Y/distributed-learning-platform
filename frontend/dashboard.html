@@ -1,0 +1,404 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard - LearnHub</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .dashboard-hero {
+            padding: 45px 10%;
+            background: white;
+            border-bottom: 1px solid #e5e7f0;
+        }
+
+        .dashboard-hero h2 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .dashboard-hero p,
+        .muted {
+            color: #737589;
+            line-height: 1.6;
+        }
+
+        .dashboard-content {
+            padding: 40px 10%;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 22px;
+            border: 1px solid #e5e7f0;
+            border-radius: 12px;
+        }
+
+        .stat-card p {
+            color: #737589;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .stat-card h3 {
+            font-size: 30px;
+            color: #4f46e5;
+        }
+
+        .dashboard-section {
+            margin-bottom: 38px;
+        }
+
+        .dashboard-section h2 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .path-card {
+            background: white;
+            border: 1px solid #e5e7f0;
+            border-radius: 12px;
+            padding: 22px;
+            margin-top: 15px;
+        }
+
+        .path-heading {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .path-heading h3 {
+            font-size: 18px;
+        }
+
+        .path-heading span {
+            color: #4f46e5;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .progress-track {
+            height: 8px;
+            background: #e9eaf2;
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: #4f46e5;
+            border-radius: 20px;
+        }
+
+        .path-card p {
+            color: #737589;
+            font-size: 14px;
+        }
+
+        .path-card a {
+            display: inline-block;
+            margin-top: 12px;
+            color: #4f46e5;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .empty-state {
+            background: white;
+            border: 1px solid #e5e7f0;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 800px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 500px) {
+            .dashboard-hero,
+            .dashboard-content {
+                padding: 30px 6%;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>LearnHub</h1>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="courses.html">Courses</a>
+        <a href="roadmaps.html">Roadmaps</a>
+        <a href="dashboard.html">Dashboard</a>
+    </nav>
+</header>
+
+<section class="dashboard-hero">
+    <h2>Your learning journey</h2>
+    <p>Track your milestones, discover what to build next, and keep moving forward.</p>
+</section>
+
+<main class="dashboard-content">
+
+    <section class="stats-grid">
+        <article class="stat-card">
+            <p>Available roadmaps</p>
+            <h3 id="total-roadmaps">—</h3>
+        </article>
+
+        <article class="stat-card">
+            <p>Completed milestones</p>
+            <h3 id="completed-milestones">—</h3>
+        </article>
+
+        <article class="stat-card">
+            <p>Projects to build</p>
+            <h3 id="projects-count">—</h3>
+        </article>
+
+        <article class="stat-card">
+            <p>Overall progress</p>
+            <h3 id="overall-progress">—</h3>
+        </article>
+    </section>
+
+    <section class="dashboard-section">
+        <h2>Your roadmaps</h2>
+        <p class="muted">See your progress across every learning path.</p>
+        <div id="roadmap-progress-list">
+            <p class="muted">Loading your progress...</p>
+        </div>
+    </section>
+
+    <section class="dashboard-section">
+        <h2>What to build next</h2>
+        <p class="muted">Practical projects connected to your learning milestones.</p>
+        <div id="next-projects">
+            <p class="muted">Finding your next projects...</p>
+        </div>
+    </section>
+
+</main>
+
+<script>
+    const API_URL = "http://localhost:8082/roadmaps";
+
+    const roadmapList = document.getElementById("roadmap-progress-list");
+    const nextProjects = document.getElementById("next-projects");
+
+    function readProgress(roadmap, milestoneCount) {
+        try {
+            const saved = JSON.parse(
+                localStorage.getItem("learnhub-progress-" + roadmap.id) || "[]"
+            );
+
+            if (!Array.isArray(saved)) return [];
+
+            return [...new Set(saved)].filter(
+                index => Number.isInteger(index) &&
+                index >= 0 &&
+                index < milestoneCount
+            );
+        } catch {
+            return [];
+        }
+    }
+
+    function createEmptyMessage(container, message, linkText, href) {
+        const box = document.createElement("div");
+        box.className = "empty-state";
+
+        const text = document.createElement("p");
+        text.className = "muted";
+        text.textContent = message;
+        box.appendChild(text);
+
+        if (linkText && href) {
+            const link = document.createElement("a");
+            link.href = href;
+            link.textContent = linkText;
+            link.style.display = "inline-block";
+            link.style.marginTop = "12px";
+            box.appendChild(link);
+        }
+
+        container.replaceChildren(box);
+    }
+
+    async function loadDashboard() {
+        try {
+            const response = await fetch(API_URL);
+
+            if (!response.ok) {
+                throw new Error("Unable to retrieve roadmaps.");
+            }
+
+            const roadmaps = await response.json();
+
+            let totalMilestones = 0;
+            let totalCompleted = 0;
+            const remainingProjects = [];
+
+            roadmapList.replaceChildren();
+            nextProjects.replaceChildren();
+
+            document.getElementById("total-roadmaps").textContent =
+                roadmaps.length;
+
+            roadmaps.forEach(roadmap => {
+                const milestones = roadmap.milestones || [];
+                const completed = readProgress(roadmap, milestones.length);
+
+                totalMilestones += milestones.length;
+                totalCompleted += completed.length;
+
+                const percent = milestones.length
+                    ? Math.round(completed.length / milestones.length * 100)
+                    : 0;
+
+                const card = document.createElement("article");
+                card.className = "path-card";
+
+                const heading = document.createElement("div");
+                heading.className = "path-heading";
+
+                const title = document.createElement("h3");
+                title.textContent = roadmap.title;
+
+                const percentage = document.createElement("span");
+                percentage.textContent = percent + "% complete";
+
+                heading.append(title, percentage);
+
+                const track = document.createElement("div");
+                track.className = "progress-track";
+                track.setAttribute("role", "progressbar");
+                track.setAttribute("aria-valuemin", "0");
+                track.setAttribute("aria-valuemax", "100");
+                track.setAttribute("aria-valuenow", String(percent));
+
+                const bar = document.createElement("div");
+                bar.className = "progress-bar";
+                bar.style.width = percent + "%";
+                track.appendChild(bar);
+
+                const summary = document.createElement("p");
+                summary.textContent =
+                    `${completed.length} of ${milestones.length} milestones completed · ${roadmap.duration}`;
+
+                const link = document.createElement("a");
+                link.href = "roadmaps.html";
+                link.textContent = "Continue learning →";
+
+                card.append(heading, track, summary, link);
+                roadmapList.appendChild(card);
+
+                milestones.forEach((milestone, index) => {
+                    if (!completed.includes(index)) {
+                        remainingProjects.push({
+                            roadmapTitle: roadmap.title,
+                            milestoneTitle: milestone.title,
+                            project: milestone.project
+                        });
+                    }
+                });
+            });
+
+            const overall = totalMilestones
+                ? Math.round(totalCompleted / totalMilestones * 100)
+                : 0;
+
+            document.getElementById("completed-milestones").textContent =
+                `${totalCompleted}/${totalMilestones}`;
+
+            document.getElementById("projects-count").textContent =
+                remainingProjects.length;
+
+            document.getElementById("overall-progress").textContent =
+                overall + "%";
+
+            if (roadmaps.length === 0) {
+                createEmptyMessage(
+                    roadmapList,
+                    "No roadmaps are available yet.",
+                    "Explore roadmaps",
+                    "roadmaps.html"
+                );
+            }
+
+            if (remainingProjects.length === 0) {
+                createEmptyMessage(
+                    nextProjects,
+                    "Amazing! All available milestones are complete.",
+                    "Explore roadmaps",
+                    "roadmaps.html"
+                );
+            } else {
+                remainingProjects.slice(0, 4).forEach(item => {
+                    const card = document.createElement("article");
+                    card.className = "path-card";
+
+                    const category = document.createElement("p");
+                    category.textContent = item.roadmapTitle;
+                    category.style.color = "#4f46e5";
+                    category.style.fontWeight = "bold";
+
+                    const title = document.createElement("h3");
+                    title.textContent = item.project;
+
+                    const milestone = document.createElement("p");
+                    milestone.textContent =
+                        "Learning milestone: " + item.milestoneTitle;
+                    milestone.style.marginTop = "8px";
+
+                    card.append(category, title, milestone);
+                    nextProjects.appendChild(card);
+                });
+            }
+        } catch (error) {
+            console.error(error);
+
+            createEmptyMessage(
+                roadmapList,
+                "Couldn't load your dashboard. Make sure Course Service is running on port 8082.",
+                "Open roadmaps",
+                "roadmaps.html"
+            );
+
+            createEmptyMessage(
+                nextProjects,
+                "Your project suggestions will appear when roadmaps load.",
+                null,
+                null
+            );
+        }
+    }
+
+    loadDashboard();
+</script>
+
+</body>
+</html>
